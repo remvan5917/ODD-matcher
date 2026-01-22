@@ -22,13 +22,21 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Configuration Firebase (fournie par l'environnement)
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyA7fW9f9WU_AEo26E_oTgHBIaOuwNzMQGI",
+  authDomain: "odd-matcher.firebaseapp.com",
+  projectId: "odd-matcher",
+  storageBucket: "odd-matcher.firebasestorage.app",
+  messagingSenderId: "310551376629",
+  appId: "1:310551376629:web:938b3610228cabe265cbbc",
+  measurementId: "G-GSQR502C0N"
+};
 
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
         // État Global
         let policyDB = {};
         let currentUser = null;
