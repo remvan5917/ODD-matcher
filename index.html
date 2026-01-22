@@ -79,13 +79,9 @@
 
         .step-dot.active { background-color: #4db6ac; box-shadow: 0 0 8px #4db6ac; }
 
-        /* Animation fading */
-        .animate-fade-in { animation: fadeIn 0.3s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
         /* Printing */
         @media print {
-            .input-chamber, .btn-export, #chart-container-wrapper, .lg\:hidden { display: none !important; }
+            .input-chamber, .btn-export, #chart-container-wrapper { display: none !important; }
             .machinery-container { display: block; height: auto; }
             .analysis-engine { overflow: visible; padding: 0; }
             body { background: white; color: black; }
@@ -98,8 +94,8 @@
     <!-- Chosen Palette: Industrial Copper & Patina (Warm darks with neon teal accents) -->
     <!-- Application Structure Plan: Split-screen SPA (Stacked on mobile). Left/Top: Input Wizard (Stepper). Right/Bottom: Dynamic Matrix Dashboard with Radar Chart visualization. Chosen for logical progression from Data Input -> Visual Analysis. -->
     <!-- Visualization & Content Choices: 
-        1. Radar Chart (Chart.js): Visualizes the "SDG Footprint" of the project. Labels automatically resize for mobile screens.
-        2. Matrix Table (HTML/JS): Detailed mapping of Activities -> Impacts -> Policies (EU/Nat/Reg). Includes mobile-optimized horizontal scroll wrapper.
+        1. Radar Chart (Chart.js): Visualizes the "SDG Footprint" of the project.
+        2. Matrix Table (HTML/JS): Detailed mapping of Activities -> Impacts -> Policies (EU/Nat/Reg).
         3. No SVG/Mermaid used. Interactive HTML/Canvas only.
     -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
@@ -112,21 +108,21 @@
     <div class="machinery-container grid grid-cols-1 lg:grid-cols-[480px_1fr] h-screen w-full">
         
         <!-- SIDEBAR: INPUT WIZARD -->
-        <aside class="input-chamber bg-gradient-to-br from-[#2a1d15] to-[#1a120d] border-b-2 lg:border-b-0 lg:border-r-2 border-copper-dark flex flex-col h-auto lg:h-screen overflow-y-auto z-10 p-5 sm:p-8 lg:p-10 shadow-[inset_0_0_50px_rgba(0,0,0,0.5)]">
+        <aside class="input-chamber bg-gradient-to-br from-[#2a1d15] to-[#1a120d] border-b-2 lg:border-b-0 lg:border-r-2 border-copper-dark flex flex-col h-auto lg:h-screen overflow-y-auto z-10 p-6 lg:p-10 shadow-[inset_0_0_50px_rgba(0,0,0,0.5)]">
             
             <div class="mb-6">
-                <div class="font-mono text-[10px] sm:text-xs uppercase text-patina tracking-widest opacity-70 mb-2">Intelligence de Financement // 2025</div>
-                <h1 class="text-2xl sm:text-3xl font-bold uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-copper-bright to-copper-dark leading-none">
+                <div class="font-mono text-xs uppercase text-patina tracking-widest opacity-70 mb-2">Intelligence de Financement // 2025</div>
+                <h1 class="text-3xl font-bold uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-copper-bright to-copper-dark leading-none">
                     La rue du<br>financement
                 </h1>
             </div>
 
-            <div class="mission-quote bg-copper-base/10 border-l-2 border-copper-base p-4 text-[11px] sm:text-xs italic mb-6 lg:mb-8 text-copper-polish/80">
+            <div class="mission-quote bg-copper-base/10 border-l-2 border-copper-base p-4 text-xs italic mb-8 text-copper-polish/80">
                 "Notre mission est de rendre l’accès aux financements simple et accessible à tous."
             </div>
 
             <!-- Stepper -->
-            <div class="flex gap-1 mb-6 lg:mb-8">
+            <div class="flex gap-1 mb-8">
                 <div id="dot-1" class="step-dot h-1 flex-1 bg-copper-dark active transition-colors duration-300"></div>
                 <div id="dot-2" class="step-dot h-1 flex-1 bg-copper-dark transition-colors duration-300"></div>
                 <div id="dot-3" class="step-dot h-1 flex-1 bg-copper-dark transition-colors duration-300"></div>
@@ -207,8 +203,8 @@
                     </div>
 
                     <div class="flex gap-4 mt-4">
-                        <button type="button" onclick="goToStep(1)" class="flex-1 border border-patina text-patina font-mono font-bold uppercase p-3 sm:p-4 hover:bg-patina hover:text-surface transition-colors">Retour</button>
-                        <button type="button" onclick="goToStep(3)" class="flex-1 bg-copper-base hover:bg-copper-bright text-surface font-mono font-bold uppercase p-3 sm:p-4 transition-all">Suivant</button>
+                        <button type="button" onclick="goToStep(1)" class="flex-1 border border-patina text-patina font-mono font-bold uppercase p-4 hover:bg-patina hover:text-surface transition-colors">Retour</button>
+                        <button type="button" onclick="goToStep(3)" class="flex-1 bg-copper-base hover:bg-copper-bright text-surface font-mono font-bold uppercase p-4 transition-all">Suivant</button>
                     </div>
                 </div>
 
@@ -218,15 +214,14 @@
                     
                     <div class="mb-6">
                         <label class="block font-mono text-[10px] text-copper-base uppercase mb-2">Sélectionnez les impacts clés</label>
-                        <!-- Fluid Grid for Tags -->
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-2 gap-2" id="tag-container">
+                        <div class="grid grid-cols-2 gap-2" id="tag-container">
                             <!-- Tags injected via JS -->
                         </div>
                     </div>
 
                     <div class="flex gap-4 mt-4">
-                        <button type="button" onclick="goToStep(2)" class="flex-1 border border-patina text-patina font-mono font-bold uppercase p-3 sm:p-4 hover:bg-patina hover:text-surface transition-colors">Retour</button>
-                        <button type="button" onclick="generateMatrix()" class="flex-1 bg-copper-base hover:bg-copper-bright text-surface font-mono font-bold uppercase p-3 sm:p-4 transition-all shadow-[0_0_15px_rgba(184,115,51,0.2)]">Analyser</button>
+                        <button type="button" onclick="goToStep(2)" class="flex-1 border border-patina text-patina font-mono font-bold uppercase p-4 hover:bg-patina hover:text-surface transition-colors">Retour</button>
+                        <button type="button" onclick="generateMatrix()" class="flex-1 bg-copper-base hover:bg-copper-bright text-surface font-mono font-bold uppercase p-4 transition-all shadow-[0_0_15px_rgba(184,115,51,0.2)]">Analyser</button>
                     </div>
                 </div>
 
@@ -234,65 +229,63 @@
         </aside>
 
         <!-- MAIN: ANALYSIS ENGINE -->
-        <main id="analysis-viewport" class="analysis-engine bg-surface relative flex flex-col h-auto lg:h-screen overflow-x-hidden overflow-y-auto lg:overflow-y-hidden">
+        <main class="analysis-engine bg-surface relative flex flex-col h-auto lg:h-screen overflow-hidden">
             
             <!-- Empty State -->
-            <div id="empty-state" class="flex flex-col items-center justify-center min-h-[400px] lg:h-full opacity-30 p-10 text-center">
+            <div id="empty-state" class="flex flex-col items-center justify-center h-full opacity-30 p-10 text-center">
                 <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5" class="mb-4 text-copper-polish">
                     <path d="M3 3h18v18H3zM3 9h18M3 15h18M9 3v18M15 3v18"/>
                 </svg>
-                <p class="font-mono text-xs sm:text-sm">Matrice d'analyse contextuelle en attente.<br>Veuillez compléter le formulaire.</p>
+                <p class="font-mono text-sm">Matrice d'analyse contextuelle en attente.<br>Veuillez compléter le formulaire.</p>
             </div>
 
             <!-- Results Container -->
-            <div id="results-container" class="hidden flex-col h-full w-full">
+            <div id="results-container" class="hidden flex-col h-full">
                 
                 <!-- Header Actions -->
-                <div class="flex justify-between items-end p-5 sm:p-6 lg:p-8 border-b border-copper-dark bg-[#0f0d0c]/90 z-20">
+                <div class="flex justify-between items-end p-6 lg:p-8 border-b border-copper-dark bg-[#0f0d0c]/90 z-20">
                     <div>
-                        <div class="font-mono text-[10px] text-patina mb-1 uppercase tracking-widest">Diagnostic généré pour</div>
-                        <h2 id="result-org" class="text-xl sm:text-2xl font-bold text-copper-bright leading-tight">Organisation</h2>
+                        <div class="font-mono text-xs text-patina mb-1">Diagnostic généré pour</div>
+                        <h2 id="result-org" class="text-xl lg:text-2xl font-bold text-copper-bright">Organisation</h2>
                         <div class="font-mono text-[10px] text-copper-polish opacity-60 mt-1" id="result-region">Région : -</div>
                     </div>
-                    <button onclick="window.print()" class="btn-export border border-copper-base text-copper-base hover:bg-copper-base hover:text-surface px-4 py-2 font-mono text-[10px] uppercase tracking-wider transition-colors hidden lg:block">
+                    <button onclick="window.print()" class="btn-export border border-copper-base text-copper-base hover:bg-copper-base hover:text-surface px-4 py-2 font-mono text-xs uppercase tracking-wider transition-colors hidden lg:block">
                         Exporter PDF
                     </button>
                 </div>
 
                 <!-- Scrollable Content -->
-                <div class="flex-1 overflow-y-auto p-5 sm:p-6 lg:p-8">
+                <div class="flex-1 overflow-y-auto p-6 lg:p-8">
                     
                     <!-- Radar Chart Section -->
-                    <div id="chart-container-wrapper" class="w-full max-w-2xl mx-auto mb-10 relative">
-                        <div class="font-mono text-[10px] sm:text-xs text-center text-copper-base mb-4 uppercase tracking-widest">Empreinte ODD du Projet</div>
-                        <div class="relative h-[250px] sm:h-[300px] w-full">
+                    <div id="chart-container-wrapper" class="w-full max-w-2xl mx-auto mb-10 chart-container relative">
+                        <div class="font-mono text-xs text-center text-copper-base mb-4 uppercase">Empreinte ODD du Projet</div>
+                        <div class="relative h-[300px] w-full">
                             <canvas id="impactChart"></canvas>
                         </div>
                     </div>
 
-                    <!-- Matrix Table Wrapper -->
-                    <div class="w-full overflow-x-auto border border-copper-dark bg-[#0f0d0c]/50 mb-10">
+                    <!-- Matrix Table -->
+                    <div class="w-full overflow-x-auto border border-copper-dark bg-[#0f0d0c]/50">
                         <table class="w-full border-collapse text-left min-w-[1000px]">
                             <thead>
                                 <tr class="bg-gradient-to-b from-[#2a1d15] to-[#1a120d]">
-                                    <th class="p-3 sm:p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[15%]">Objectif</th>
-                                    <th class="p-3 sm:p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[15%]">Activité</th>
-                                    <th class="p-3 sm:p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[15%]">Impact Clé</th>
-                                    <th class="p-3 sm:p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[10%]">ODD</th>
-                                    <th class="p-3 sm:p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[15%]">Politique UE</th>
-                                    <th class="p-3 sm:p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[15%]">Politique Nat.</th>
-                                    <th class="p-3 sm:p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[15%]">Politique Reg.</th>
+                                    <th class="p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[15%]">Objectif</th>
+                                    <th class="p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[15%]">Activité</th>
+                                    <th class="p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[15%]">Impact Clé</th>
+                                    <th class="p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[10%]">ODD</th>
+                                    <th class="p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[15%]">Politique UE</th>
+                                    <th class="p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[15%]">Politique Nat.</th>
+                                    <th class="p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[15%]">Politique Reg.</th>
                                 </tr>
                             </thead>
-                            <tbody id="matrix-body" class="text-[11px] sm:text-xs text-[#d4c4b9]">
+                            <tbody id="matrix-body" class="text-xs text-[#d4c4b9]">
                                 <!-- Rows generated by JS -->
                             </tbody>
                         </table>
                     </div>
-                    
-                    <!-- Mobile Hint -->
-                    <div class="lg:hidden text-center mt-2 mb-8 border-t border-copper-dark/20 pt-4">
-                        <span class="font-mono text-[10px] text-patina bg-patina/5 px-3 py-1 rounded-full uppercase tracking-tighter">← Faire glisser le tableau pour explorer →</span>
+                    <div class="lg:hidden text-center mt-4">
+                        <span class="font-mono text-[10px] text-patina animate-pulse">← Glisser pour voir le tableau →</span>
                     </div>
 
                 </div>
@@ -311,7 +304,7 @@
             "Ruralité", "Politique de la ville", "Justice et sécurité", "Cohésion sociale"
         ];
 
-        // Mapping Database
+        // Mapping Database based on Source Report
         const policyDB = {
             "Agriculture, forêt, pêche": { odd: "ODD 2, 14, 15", eu: "PAC 2023-2027", fr: "Plan alimentation durable", reg: "Plan agriculture durable" },
             "Alimentation, bien-être animal": { odd: "ODD 2, 12", eu: "Farm to Fork Strategy", fr: "PNA (Alimentation)", reg: "Souveraineté alimentaire" },
@@ -339,7 +332,7 @@
             const container = document.getElementById('tag-container');
             impactsList.forEach(tag => {
                 const el = document.createElement('div');
-                el.className = 'selectable-tag border border-copper-dark p-2 text-center text-[9px] sm:text-[10px] uppercase font-mono cursor-pointer bg-copper-base/5 hover:bg-copper-base/20 rounded-sm flex items-center justify-center';
+                el.className = 'selectable-tag border border-copper-dark p-3 text-center text-[10px] uppercase font-mono cursor-pointer bg-copper-base/5 hover:bg-copper-base/20 rounded-sm flex items-center justify-center';
                 el.textContent = tag;
                 el.onclick = () => el.classList.toggle('active');
                 container.appendChild(el);
@@ -348,9 +341,14 @@
 
         // --- NAVIGATION LOGIC ---
         function goToStep(step) {
+            // Hide all steps
             document.querySelectorAll('.form-step').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.step-dot').forEach(el => el.classList.remove('active'));
+            
+            // Show target
             document.getElementById(`step-${step}`).classList.remove('hidden');
+            
+            // Update dots
             for(let i=1; i<=step; i++) {
                 document.getElementById(`dot-${i}`).classList.add('active');
             }
@@ -358,19 +356,24 @@
 
         // --- GENERATION LOGIC ---
         function generateMatrix() {
+            // 1. Gather Inputs
             const orgName = document.getElementById('org-name').value || "Mon Organisation";
             const region = document.getElementById('region').value;
             const objGen = document.getElementById('gen-obj').value || "Objectif Global";
+            
             const acts = [
                 document.getElementById('act-1').value,
                 document.getElementById('act-2').value,
                 document.getElementById('act-3').value
             ].filter(a => a.trim() !== "");
+
             const selectedTags = Array.from(document.querySelectorAll('.selectable-tag.active')).map(t => t.textContent);
 
+            // 2. Validation
             if (acts.length === 0) { alert("Veuillez saisir au moins une activité."); return; }
             if (selectedTags.length === 0) { alert("Veuillez sélectionner au moins un impact."); return; }
 
+            // 3. UI Transition (Scanner)
             const scanner = document.getElementById('scanner');
             scanner.style.display = 'block';
             scanner.style.animation = 'scanAnim 1.5s linear forwards';
@@ -381,16 +384,22 @@
                 document.getElementById('results-container').classList.remove('hidden');
                 document.getElementById('results-container').classList.add('flex');
 
+                // Update Header
                 document.getElementById('result-org').textContent = orgName;
                 document.getElementById('result-region').textContent = "Territoire : " + region;
 
+                // 4. Build Matrix HTML
                 const tbody = document.getElementById('matrix-body');
                 tbody.innerHTML = '';
+
+                // Data for Chart
                 let oddCounts = {};
 
                 acts.forEach((act, actIndex) => {
                     selectedTags.forEach((tag, tagIndex) => {
                         const data = policyDB[tag] || { odd: "-", eu: "-", fr: "-", reg: "-" };
+                        
+                        // Collect Chart Data
                         const odds = data.odd.replace(/ODD /g, '').split(', ');
                         odds.forEach(o => {
                             if(!oddCounts[o]) oddCounts[o] = 0;
@@ -400,45 +409,44 @@
                         const tr = document.createElement('tr');
                         tr.className = "hover:bg-copper-base/5 transition-colors border-b border-copper-dark/50";
                         
+                        // Cells
                         let html = '';
+                        
+                        // Rowspan logic for Context
                         if (tagIndex === 0) {
-                            html += `<td rowspan="${selectedTags.length}" class="p-3 sm:p-4 border-r border-copper-dark align-top font-bold text-copper-bright bg-[#0f0d0c]/30">${actIndex === 0 ? objGen : ''}</td>`;
-                            html += `<td rowspan="${selectedTags.length}" class="p-3 sm:p-4 border-r border-copper-dark align-top font-semibold">${act}</td>`;
+                            html += `<td rowspan="${selectedTags.length}" class="p-4 border-r border-copper-dark align-top font-bold text-copper-bright bg-[#0f0d0c]/30">${actIndex === 0 ? objGen : ''}</td>`;
+                            html += `<td rowspan="${selectedTags.length}" class="p-4 border-r border-copper-dark align-top font-semibold">${act}</td>`;
                         }
+
                         html += `
-                            <td class="p-3 sm:p-4 border-r border-copper-dark">
-                                <span class="inline-block px-2 py-1 bg-patina/10 border border-patina text-patina text-[9px] sm:text-[10px] font-mono rounded-sm">${tag}</span>
+                            <td class="p-4 border-r border-copper-dark">
+                                <span class="inline-block px-2 py-1 bg-patina/10 border border-patina text-patina text-[10px] font-mono rounded-sm">${tag}</span>
                             </td>
-                            <td class="p-3 sm:p-4 border-r border-copper-dark font-mono text-[10px] text-white">${data.odd}</td>
-                            <td class="p-3 sm:p-4 border-r border-copper-dark">${data.eu}</td>
-                            <td class="p-3 sm:p-4 border-r border-copper-dark">${data.fr}</td>
-                            <td class="p-3 sm:p-4">${data.reg}</td>
+                            <td class="p-4 border-r border-copper-dark font-mono text-[10px] text-white">${data.odd}</td>
+                            <td class="p-4 border-r border-copper-dark text-[11px]">${data.eu}</td>
+                            <td class="p-4 border-r border-copper-dark text-[11px]">${data.fr}</td>
+                            <td class="p-4 text-[11px]">${data.reg}</td>
                         `;
+                        
                         tr.innerHTML = html;
                         tbody.appendChild(tr);
                     });
                 });
 
+                // 5. Render Chart
                 renderChart(oddCounts);
-
-                // UX Mobile: Scroll automatically to analysis section
-                if (window.innerWidth < 1024) {
-                    const viewport = document.getElementById('analysis-viewport');
-                    viewport.scrollIntoView({ behavior: 'smooth' });
-                }
 
             }, 1500);
         }
 
         function renderChart(data) {
             const ctx = document.getElementById('impactChart').getContext('2d');
+            
+            // Standardize labels 1-17
             const labels = Array.from({length: 17}, (_, i) => `ODD ${i+1}`);
             const values = labels.map(l => data[l.replace('ODD ', '')] || 0);
 
             if (currentChart) currentChart.destroy();
-
-            // Check if mobile to adjust font size
-            const isMobile = window.innerWidth < 768;
 
             currentChart = new Chart(ctx, {
                 type: 'radar',
@@ -463,14 +471,7 @@
                             grid: { color: 'rgba(184, 115, 51, 0.2)' },
                             pointLabels: {
                                 color: '#b87333',
-                                font: { 
-                                    size: isMobile ? 8 : 10, 
-                                    family: 'JetBrains Mono' 
-                                },
-                                // Label truncation for smaller screens
-                                callback: function(label) {
-                                    return label;
-                                }
+                                font: { size: 9, family: 'JetBrains Mono' }
                             },
                             ticks: { display: false, backdropColor: 'transparent' }
                         }
