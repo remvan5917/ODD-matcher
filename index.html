@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La rue du financement | ODD Match Analyzer</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Tailwind Config for Custom Colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        copper: {
+                            dark: '#3d2b1f',
+                            base: '#b87333',
+                            bright: '#e3965e',
+                            polish: '#ffccaa',
+                        },
+                        patina: '#4db6ac',
+                        surface: '#0f0d0c',
+                    },
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Industrial Styles */
+        body {
+            background-color: #0f0d0c;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(184, 115, 51, 0.08) 0%, transparent 70%),
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 10px);
+            overflow-x: hidden;
+        }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f0d0c; }
+        ::-webkit-scrollbar-thumb { background: #3d2b1f; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #b87333; }
+
+        /* Scanner Animation */
+        #scanner {
+            position: fixed; top: 0; left: 0; width: 100%; height: 3px;
+            background: #4db6ac; box-shadow: 0 0 15px #4db6ac;
+            display: none; z-index: 100;
+        }
+        @keyframes scanAnim { 0% { top: 0; } 100% { top: 100%; } }
+
+        /* Interactive Elements */
+        .selectable-tag {
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        .selectable-tag.active {
+            background-color: #4db6ac;
+            color: #0f0d0c;
+            border-color: #4db6ac;
+            font-weight: 700;
+            box-shadow: 0 0 10px rgba(77, 182, 172, 0.3);
+        }
+
+        .step-dot.active { background-color: #4db6ac; box-shadow: 0 0 8px #4db6ac; }
+
+        /* Printing */
+        @media print {
+            .input-chamber, .btn-export, #chart-container-wrapper { display: none !important; }
+            .machinery-container { display: block; height: auto; }
+            .analysis-engine { overflow: visible; padding: 0; }
+            body { background: white; color: black; }
+            .matrix-table th { background: #eee; color: black; }
+            .matrix-table td { border: 1px solid #ccc; color: black; }
+        }
+    </style>
+
+    <!-- Placeholder Comments Required by Prompt -->
+    <!-- Chosen Palette: Industrial Copper & Patina (Warm darks with neon teal accents) -->
+    <!-- Application Structure Plan: Split-screen SPA (Stacked on mobile). Left/Top: Input Wizard (Stepper). Right/Bottom: Dynamic Matrix Dashboard with Radar Chart visualization. Chosen for logical progression from Data Input -> Visual Analysis. -->
+    <!-- Visualization & Content Choices: 
+        1. Radar Chart (Chart.js): Visualizes the "SDG Footprint" of the project.
+        2. Matrix Table (HTML/JS): Detailed mapping of Activities -> Impacts -> Policies (EU/Nat/Reg).
+        3. No SVG/Mermaid used. Interactive HTML/Canvas only.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="text-copper-polish font-sans min-h-screen">
+
+    <div id="scanner"></div>
+
+    <!-- Main Layout: Grid switches from 1 col (mobile) to 2 cols (desktop) -->
+    <div class="machinery-container grid grid-cols-1 lg:grid-cols-[480px_1fr] h-screen w-full">
+        
+        <!-- SIDEBAR: INPUT WIZARD -->
+        <aside class="input-chamber bg-gradient-to-br from-[#2a1d15] to-[#1a120d] border-b-2 lg:border-b-0 lg:border-r-2 border-copper-dark flex flex-col h-auto lg:h-screen overflow-y-auto z-10 p-6 lg:p-10 shadow-[inset_0_0_50px_rgba(0,0,0,0.5)]">
+            
+            <div class="mb-6">
+                <div class="font-mono text-xs uppercase text-patina tracking-widest opacity-70 mb-2">Intelligence de Financement // 2025</div>
+                <h1 class="text-3xl font-bold uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-copper-bright to-copper-dark leading-none">
+                    La rue du<br>financement
+                </h1>
+            </div>
+
+            <div class="mission-quote bg-copper-base/10 border-l-2 border-copper-base p-4 text-xs italic mb-8 text-copper-polish/80">
+                "Notre mission est de rendre l’accès aux financements simple et accessible à tous."
+            </div>
+
+            <!-- Stepper -->
+            <div class="flex gap-1 mb-8">
+                <div id="dot-1" class="step-dot h-1 flex-1 bg-copper-dark active transition-colors duration-300"></div>
+                <div id="dot-2" class="step-dot h-1 flex-1 bg-copper-dark transition-colors duration-300"></div>
+                <div id="dot-3" class="step-dot h-1 flex-1 bg-copper-dark transition-colors duration-300"></div>
+            </div>
+
+            <form id="projectForm" onsubmit="event.preventDefault();">
+                
+                <!-- STEP 1: ORGANIZATION -->
+                <div id="step-1" class="form-step block animate-fade-in">
+                    <div class="font-mono text-xs text-patina border-b border-copper-dark pb-2 mb-6 uppercase tracking-wider">01. Organisation</div>
+                    
+                    <div class="mb-5">
+                        <label class="block font-mono text-[10px] text-copper-base uppercase mb-1">Nom de l'organisation</label>
+                        <input type="text" id="org-name" placeholder="Ex: Association Eco-Impact" class="w-full bg-[#110e0c] border border-copper-dark p-3 text-sm text-copper-bright focus:border-patina focus:bg-[#1a1512] outline-none rounded-sm transition-colors">
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="block font-mono text-[10px] text-copper-base uppercase mb-1">Type de structure</label>
+                        <select id="org-type" class="w-full bg-[#110e0c] border border-copper-dark p-3 text-sm text-copper-bright focus:border-patina outline-none rounded-sm">
+                            <option>Association (ESS)</option>
+                            <option>TPE, PME</option>
+                            <option>Secteur Public</option>
+                            <option>Grande entreprise</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="block font-mono text-[10px] text-copper-base uppercase mb-1">Région d'Exécution</label>
+                        <select id="region" class="w-full bg-[#110e0c] border border-copper-dark p-3 text-sm text-copper-bright focus:border-patina outline-none rounded-sm">
+                            <optgroup label="France Métropolitaine">
+                                <option value="Auvergne-Rhône-Alpes">Auvergne-Rhône-Alpes</option>
+                                <option value="Bourgogne-Franche-Comté">Bourgogne-Franche-Comté</option>
+                                <option value="Bretagne">Bretagne</option>
+                                <option value="Centre-Val de Loire">Centre-Val de Loire</option>
+                                <option value="Corse">Corse</option>
+                                <option value="Grand Est">Grand Est</option>
+                                <option value="Hauts-de-France">Hauts-de-France</option>
+                                <option value="Île-de-France">Île-de-France</option>
+                                <option value="Normandie">Normandie</option>
+                                <option value="Nouvelle-Aquitaine">Nouvelle-Aquitaine</option>
+                                <option value="Occitanie">Occitanie</option>
+                                <option value="Pays de la Loire">Pays de la Loire</option>
+                                <option value="Provence-Alpes-Côte d'Azur">Provence-Alpes-Côte d'Azur</option>
+                            </optgroup>
+                            <optgroup label="Outre-Mer (DROM)">
+                                <option value="Guadeloupe">Guadeloupe</option>
+                                <option value="Guyane">Guyane</option>
+                                <option value="La Réunion">La Réunion</option>
+                                <option value="Martinique">Martinique</option>
+                                <option value="Mayotte">Mayotte</option>
+                            </optgroup>
+                            <optgroup label="Collectivités d'Outre-Mer (COM)">
+                                <option value="Polynésie française">Polynésie française</option>
+                                <option value="Nouvelle-Calédonie">Nouvelle-Calédonie</option>
+                                <option value="Saint-Martin">Saint-Martin</option>
+                            </optgroup>
+                            <option value="National">National (France entière)</option>
+                        </select>
+                    </div>
+
+                    <button type="button" onclick="goToStep(2)" class="w-full bg-copper-base hover:bg-copper-bright text-surface font-mono font-bold uppercase p-4 mt-4 transition-all hover:shadow-[0_0_20px_rgba(184,115,51,0.4)]">Suivant : Projets</button>
+                </div>
+
+                <!-- STEP 2: PROJECTS -->
+                <div id="step-2" class="form-step hidden animate-fade-in">
+                    <div class="font-mono text-xs text-patina border-b border-copper-dark pb-2 mb-6 uppercase tracking-wider">02. Projets & Activités</div>
+                    
+                    <div class="mb-5">
+                        <label class="block font-mono text-[10px] text-copper-base uppercase mb-1">Objectif général (Contexte)</label>
+                        <textarea id="gen-obj" rows="3" placeholder="Décrivez votre vision globale..." class="w-full bg-[#110e0c] border border-copper-dark p-3 text-sm text-copper-bright focus:border-patina outline-none rounded-sm resize-none"></textarea>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="block font-mono text-[10px] text-copper-base uppercase mb-1">Activités spécifiques (Pour la matrice)</label>
+                        <input type="text" id="act-1" placeholder="Activité 1 (ex: Rénovation)" class="w-full bg-[#110e0c] border border-copper-dark p-3 text-sm text-copper-bright focus:border-patina outline-none rounded-sm mb-2">
+                        <input type="text" id="act-2" placeholder="Activité 2 (ex: Formation)" class="w-full bg-[#110e0c] border border-copper-dark p-3 text-sm text-copper-bright focus:border-patina outline-none rounded-sm mb-2">
+                        <input type="text" id="act-3" placeholder="Activité 3 (Optionnel)" class="w-full bg-[#110e0c] border border-copper-dark p-3 text-sm text-copper-bright focus:border-patina outline-none rounded-sm">
+                    </div>
+
+                    <div class="flex gap-4 mt-4">
+                        <button type="button" onclick="goToStep(1)" class="flex-1 border border-patina text-patina font-mono font-bold uppercase p-4 hover:bg-patina hover:text-surface transition-colors">Retour</button>
+                        <button type="button" onclick="goToStep(3)" class="flex-1 bg-copper-base hover:bg-copper-bright text-surface font-mono font-bold uppercase p-4 transition-all">Suivant</button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: IMPACTS -->
+                <div id="step-3" class="form-step hidden animate-fade-in">
+                    <div class="font-mono text-xs text-patina border-b border-copper-dark pb-2 mb-6 uppercase tracking-wider">03. Domaines d'Impact</div>
+                    
+                    <div class="mb-6">
+                        <label class="block font-mono text-[10px] text-copper-base uppercase mb-2">Sélectionnez les impacts clés</label>
+                        <div class="grid grid-cols-2 gap-2" id="tag-container">
+                            <!-- Tags injected via JS -->
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 mt-4">
+                        <button type="button" onclick="goToStep(2)" class="flex-1 border border-patina text-patina font-mono font-bold uppercase p-4 hover:bg-patina hover:text-surface transition-colors">Retour</button>
+                        <button type="button" onclick="generateMatrix()" class="flex-1 bg-copper-base hover:bg-copper-bright text-surface font-mono font-bold uppercase p-4 transition-all shadow-[0_0_15px_rgba(184,115,51,0.2)]">Analyser</button>
+                    </div>
+                </div>
+
+            </form>
+        </aside>
+
+        <!-- MAIN: ANALYSIS ENGINE -->
+        <main class="analysis-engine bg-surface relative flex flex-col h-auto lg:h-screen overflow-hidden">
+            
+            <!-- Empty State -->
+            <div id="empty-state" class="flex flex-col items-center justify-center h-full opacity-30 p-10 text-center">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5" class="mb-4 text-copper-polish">
+                    <path d="M3 3h18v18H3zM3 9h18M3 15h18M9 3v18M15 3v18"/>
+                </svg>
+                <p class="font-mono text-sm">Matrice d'analyse contextuelle en attente.<br>Veuillez compléter le formulaire.</p>
+            </div>
+
+            <!-- Results Container -->
+            <div id="results-container" class="hidden flex-col h-full">
+                
+                <!-- Header Actions -->
+                <div class="flex justify-between items-end p-6 lg:p-8 border-b border-copper-dark bg-[#0f0d0c]/90 z-20">
+                    <div>
+                        <div class="font-mono text-xs text-patina mb-1">Diagnostic généré pour</div>
+                        <h2 id="result-org" class="text-xl lg:text-2xl font-bold text-copper-bright">Organisation</h2>
+                        <div class="font-mono text-[10px] text-copper-polish opacity-60 mt-1" id="result-region">Région : -</div>
+                    </div>
+                    <button onclick="window.print()" class="btn-export border border-copper-base text-copper-base hover:bg-copper-base hover:text-surface px-4 py-2 font-mono text-xs uppercase tracking-wider transition-colors hidden lg:block">
+                        Exporter PDF
+                    </button>
+                </div>
+
+                <!-- Scrollable Content -->
+                <div class="flex-1 overflow-y-auto p-6 lg:p-8">
+                    
+                    <!-- Radar Chart Section -->
+                    <div id="chart-container-wrapper" class="w-full max-w-2xl mx-auto mb-10 chart-container relative">
+                        <div class="font-mono text-xs text-center text-copper-base mb-4 uppercase">Empreinte ODD du Projet</div>
+                        <div class="relative h-[300px] w-full">
+                            <canvas id="impactChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Matrix Table -->
+                    <div class="w-full overflow-x-auto border border-copper-dark bg-[#0f0d0c]/50">
+                        <table class="w-full border-collapse text-left min-w-[1000px]">
+                            <thead>
+                                <tr class="bg-gradient-to-b from-[#2a1d15] to-[#1a120d]">
+                                    <th class="p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[15%]">Objectif</th>
+                                    <th class="p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[15%]">Activité</th>
+                                    <th class="p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[15%]">Impact Clé</th>
+                                    <th class="p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[10%]">ODD</th>
+                                    <th class="p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[15%]">Politique UE</th>
+                                    <th class="p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[15%]">Politique Nat.</th>
+                                    <th class="p-4 border border-copper-dark font-mono text-[10px] uppercase text-copper-bright tracking-wider w-[15%]">Politique Reg.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="matrix-body" class="text-xs text-[#d4c4b9]">
+                                <!-- Rows generated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="lg:hidden text-center mt-4">
+                        <span class="font-mono text-[10px] text-patina animate-pulse">← Glisser pour voir le tableau →</span>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Data & Logic -->
+    <script>
+        // --- DATA MAPPING ---
+        const impactsList = [
+            "Agriculture, forêt, pêche", "Alimentation, bien-être animal", "Aménagement, construction", 
+            "Citoyenneté, vie sociale", "Culture, art, patrimoine", "Déchets, économie circulaire", 
+            "Emploi, insertion", "Eau, biodiversité", "Éducation, formation", 
+            "Mobilités, transports", "Santé, prévention", "Transition écologique", 
+            "Ruralité", "Politique de la ville", "Justice et sécurité", "Cohésion sociale"
+        ];
+
+        // Mapping Database based on Source Report
+        const policyDB = {
+            "Agriculture, forêt, pêche": { odd: "ODD 2, 14, 15", eu: "PAC 2023-2027", fr: "Plan alimentation durable", reg: "Plan agriculture durable" },
+            "Alimentation, bien-être animal": { odd: "ODD 2, 12", eu: "Farm to Fork Strategy", fr: "PNA (Alimentation)", reg: "Souveraineté alimentaire" },
+            "Aménagement, construction": { odd: "ODD 11", eu: "New European Bauhaus", fr: "France Nation Verte", reg: "SRADDET / CPER" },
+            "Citoyenneté, vie sociale": { odd: "ODD 16, 17", eu: "URBACT / CERV", fr: "Plan gouvernement ouvert", reg: "Pactes territoriaux" },
+            "Culture, art, patrimoine": { odd: "ODD 4, 11", eu: "Europe Créative", fr: "Culture 2030", reg: "SRDC (Culture)" },
+            "Déchets, économie circulaire": { odd: "ODD 12", eu: "Plan d'action EC", fr: "Loi AGEC", reg: "Plan régional déchets (PRPGD)" },
+            "Emploi, insertion": { odd: "ODD 8, 10", eu: "FSE+ / EaSI", fr: "Plan compétences (PIC)", reg: "SRDEII / PRIE" },
+            "Eau, biodiversité": { odd: "ODD 6, 15", eu: "Stratégie Biodiversité 2030", fr: "SNB 2030", reg: "SRCE / Trame Verte" },
+            "Éducation, formation": { odd: "ODD 4", eu: "Erasmus+", fr: "France 2030 (Compétences)", reg: "Pacte régional d'investissement" },
+            "Mobilités, transports": { odd: "ODD 11", eu: "Urban Mobility Framework", fr: "Loi LOM", reg: "SRADDET Mobilité" },
+            "Santé, prévention": { odd: "ODD 3", eu: "EU4Health", fr: "Stratégie Nationale Santé", reg: "PRS (Santé) / CLS" },
+            "Transition écologique": { odd: "ODD 13, 7", eu: "Green Deal / REPowerEU", fr: "SNBC (Bas Carbone)", reg: "PCAET / SRCAE" },
+            "Ruralité": { odd: "ODD 10, 11", eu: "LEADER / FEADER", fr: "Agenda Rural", reg: "Contrats de ruralité" },
+            "Politique de la ville": { odd: "ODD 1, 11", eu: "FEDER (Urbain)", fr: "Quartiers 2030", reg: "Contrats de ville" },
+            "Justice et sécurité": { odd: "ODD 16", eu: "Programme Justice", fr: "Plan Justice 2027", reg: "Prévention délinquance" },
+            "Cohésion sociale": { odd: "ODD 1, 5", eu: "FSE+ (Inclusion)", fr: "Stratégie Pauvreté", reg: "Schéma action sociale" }
+        };
+
+        let currentChart = null;
+
+        // --- INIT ---
+        window.onload = function() {
+            // Render Tag Cloud
+            const container = document.getElementById('tag-container');
+            impactsList.forEach(tag => {
+                const el = document.createElement('div');
+                el.className = 'selectable-tag border border-copper-dark p-3 text-center text-[10px] uppercase font-mono cursor-pointer bg-copper-base/5 hover:bg-copper-base/20 rounded-sm flex items-center justify-center';
+                el.textContent = tag;
+                el.onclick = () => el.classList.toggle('active');
+                container.appendChild(el);
+            });
+        };
+
+        // --- NAVIGATION LOGIC ---
+        function goToStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.form-step').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.step-dot').forEach(el => el.classList.remove('active'));
+            
+            // Show target
+            document.getElementById(`step-${step}`).classList.remove('hidden');
+            
+            // Update dots
+            for(let i=1; i<=step; i++) {
+                document.getElementById(`dot-${i}`).classList.add('active');
+            }
+        }
+
+        // --- GENERATION LOGIC ---
+        function generateMatrix() {
+            // 1. Gather Inputs
+            const orgName = document.getElementById('org-name').value || "Mon Organisation";
+            const region = document.getElementById('region').value;
+            const objGen = document.getElementById('gen-obj').value || "Objectif Global";
+            
+            const acts = [
+                document.getElementById('act-1').value,
+                document.getElementById('act-2').value,
+                document.getElementById('act-3').value
+            ].filter(a => a.trim() !== "");
+
+            const selectedTags = Array.from(document.querySelectorAll('.selectable-tag.active')).map(t => t.textContent);
+
+            // 2. Validation
+            if (acts.length === 0) { alert("Veuillez saisir au moins une activité."); return; }
+            if (selectedTags.length === 0) { alert("Veuillez sélectionner au moins un impact."); return; }
+
+            // 3. UI Transition (Scanner)
+            const scanner = document.getElementById('scanner');
+            scanner.style.display = 'block';
+            scanner.style.animation = 'scanAnim 1.5s linear forwards';
+
+            setTimeout(() => {
+                scanner.style.display = 'none';
+                document.getElementById('empty-state').classList.add('hidden');
+                document.getElementById('results-container').classList.remove('hidden');
+                document.getElementById('results-container').classList.add('flex');
+
+                // Update Header
+                document.getElementById('result-org').textContent = orgName;
+                document.getElementById('result-region').textContent = "Territoire : " + region;
+
+                // 4. Build Matrix HTML
+                const tbody = document.getElementById('matrix-body');
+                tbody.innerHTML = '';
+
+                // Data for Chart
+                let oddCounts = {};
+
+                acts.forEach((act, actIndex) => {
+                    selectedTags.forEach((tag, tagIndex) => {
+                        const data = policyDB[tag] || { odd: "-", eu: "-", fr: "-", reg: "-" };
+                        
+                        // Collect Chart Data
+                        const odds = data.odd.replace(/ODD /g, '').split(', ');
+                        odds.forEach(o => {
+                            if(!oddCounts[o]) oddCounts[o] = 0;
+                            oddCounts[o]++;
+                        });
+
+                        const tr = document.createElement('tr');
+                        tr.className = "hover:bg-copper-base/5 transition-colors border-b border-copper-dark/50";
+                        
+                        // Cells
+                        let html = '';
+                        
+                        // Rowspan logic for Context
+                        if (tagIndex === 0) {
+                            html += `<td rowspan="${selectedTags.length}" class="p-4 border-r border-copper-dark align-top font-bold text-copper-bright bg-[#0f0d0c]/30">${actIndex === 0 ? objGen : ''}</td>`;
+                            html += `<td rowspan="${selectedTags.length}" class="p-4 border-r border-copper-dark align-top font-semibold">${act}</td>`;
+                        }
+
+                        html += `
+                            <td class="p-4 border-r border-copper-dark">
+                                <span class="inline-block px-2 py-1 bg-patina/10 border border-patina text-patina text-[10px] font-mono rounded-sm">${tag}</span>
+                            </td>
+                            <td class="p-4 border-r border-copper-dark font-mono text-[10px] text-white">${data.odd}</td>
+                            <td class="p-4 border-r border-copper-dark text-[11px]">${data.eu}</td>
+                            <td class="p-4 border-r border-copper-dark text-[11px]">${data.fr}</td>
+                            <td class="p-4 text-[11px]">${data.reg}</td>
+                        `;
+                        
+                        tr.innerHTML = html;
+                        tbody.appendChild(tr);
+                    });
+                });
+
+                // 5. Render Chart
+                renderChart(oddCounts);
+
+            }, 1500);
+        }
+
+        function renderChart(data) {
+            const ctx = document.getElementById('impactChart').getContext('2d');
+            
+            // Standardize labels 1-17
+            const labels = Array.from({length: 17}, (_, i) => `ODD ${i+1}`);
+            const values = labels.map(l => data[l.replace('ODD ', '')] || 0);
+
+            if (currentChart) currentChart.destroy();
+
+            currentChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Intensité d\'impact',
+                        data: values,
+                        backgroundColor: 'rgba(77, 182, 172, 0.2)',
+                        borderColor: '#4db6ac',
+                        pointBackgroundColor: '#b87333',
+                        pointBorderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(184, 115, 51, 0.2)' },
+                            grid: { color: 'rgba(184, 115, 51, 0.2)' },
+                            pointLabels: {
+                                color: '#b87333',
+                                font: { size: 9, family: 'JetBrains Mono' }
+                            },
+                            ticks: { display: false, backdropColor: 'transparent' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
